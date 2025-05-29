@@ -1,0 +1,127 @@
+# Git
+.git
+.gitignore
+README.md
+LICENSE
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+venv
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.pytest_cache
+htmlcov
+
+# IDEs
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Development files
+.env.example
+.env.local
+.env.development
+docker-compose.override.yml
+docker-compose.dev.yml
+
+# Testing
+tests
+.pytest_cache
+coverage.xml
+*.cover
+.hypothesis
+
+# Temporary files
+tmp
+temp
+*.tmp
+*.bak
+*.backup
+
+# Logs
+logs
+*.log
+
+# Data directories (include only sample data)
+data/*
+!data/sample_docs
+uploads/*
+!uploads/.gitkeep
+
+# Build artifacts
+build
+dist
+*.egg-info
+
+# Node modules (if any)
+node_modules
+npm-debug.log
+
+# Deployment specific
+deployment/ssl
+nginx/logs
+supervisor/logs
+
+# IDE specific
+.spyderproject
+.spyproject
+.ropeproject
+
+# Virtual environments
+bin
+include
+lib
+lib64
+share
+pyvenv.cfg
+
+# Jupyter
+.ipynb_checkpoints
+
+# mypy
+.mypy_cache
+.dmypy.json
+dmypy.json
+
+# Environments
+.env
+.venv
+env
+venv
+ENV
+env.bak
+venv.bak
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+qdrant_storage
