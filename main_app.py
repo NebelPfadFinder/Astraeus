@@ -1,4 +1,3 @@
-# v2 
 """
 Complete Streamlit Chatbot Application
 Modern chatbot interface with Mistral API and Qdrant integration
@@ -231,6 +230,7 @@ def handle_user_input(ui: ModernChatUI, history: ChatHistory, bot: MistralChatBo
         
         # Show typing indicator
         st.session_state.bot_typing = True
+        st.session_state.processing_response = True
         st.rerun()
 
 
@@ -268,20 +268,19 @@ def handle_quick_action(action: str, history: ChatHistory):
         user_message = ChatMessage(content=action, sender="user")
         history.add_message(user_message)
         st.session_state.bot_typing = True
+        st.session_state.processing_response = True
         st.rerun()
 
 
 def main():
     """Main application function"""
-    # Setup
+    # Setup and initialize session state FIRST
     config = setup_page_config()
+    initialize_session()  # Move this up before any other initialization
+    
     ui = initialize_chat_ui()
     history = initialize_chat_history()
     bot = MistralChatBot(config)
-    
-    # Initialize session state
-    if 'bot_typing' not in st.session_state:
-        st.session_state.bot_typing = False
     
     # Render UI
     render_header(ui, bot)
@@ -307,9 +306,12 @@ def main():
     handle_user_input(ui, history, bot)
     
     # Process pending bot response
-    if st.session_state.bot_typing and history.messages:
+    if st.session_state.get('bot_typing', False) and history.messages:
         last_message = history.messages[-1]
-        if last_message.sender == "user":
+        if last_message.sender == "user" and not st.session_state.get('processing_response', False):
+            # Prevent multiple processing
+            st.session_state.processing_response = True
+            
             # Run async bot response
             with st.spinner("AI is thinking..."):
                 try:
@@ -324,11 +326,13 @@ def main():
                     )
                     history.add_message(bot_message)
                     st.session_state.bot_typing = False
+                    st.session_state.processing_response = False
                     st.rerun()
                     
                 except Exception as e:
                     ui.show_notification(f"Error: {str(e)}", "error")
                     st.session_state.bot_typing = False
+                    st.session_state.processing_response = False
     
     # Quick actions below chat
     st.markdown("---")
@@ -435,6 +439,12 @@ def initialize_session():
     if 'session_id' not in st.session_state:
         st.session_state.session_id = f"chat_{int(time.time())}"
     
+    if 'bot_typing' not in st.session_state:
+        st.session_state.bot_typing = False
+    
+    if 'session_start' not in st.session_state:
+        st.session_state.session_start = datetime.now()
+    
     if 'conversation_mode' not in st.session_state:
         st.session_state.conversation_mode = "🤖 Assistant"
     
@@ -446,16 +456,20 @@ def initialize_session():
             'max_context_docs': 3,
             'context_threshold': 0.7
         }
+    
+    if 'processing_response' not in st.session_state:
+        st.session_state.processing_response = False
 
 
 def enhanced_main():
     """Enhanced main function with advanced features"""
-    # Setup
+    # Setup and initialize session state FIRST
     config = setup_page_config()
+    initialize_session()  # Initialize session state before anything else
+    
     ui = initialize_chat_ui()
     history = initialize_chat_history()
     bot = MistralChatBot(config)
-    initialize_session()
     
     # Advanced features
     features = AdvancedFeatures()
@@ -495,9 +509,12 @@ def enhanced_main():
     handle_user_input(ui, history, bot)
     
     # Process bot responses
-    if st.session_state.bot_typing and history.messages:
+    if st.session_state.get('bot_typing', False) and history.messages:
         last_message = history.messages[-1]
-        if last_message.sender == "user":
+        if last_message.sender == "user" and not st.session_state.get('processing_response', False):
+            # Prevent multiple processing
+            st.session_state.processing_response = True
+            
             with st.spinner("AI is thinking..."):
                 try:
                     time.sleep(2)
@@ -525,11 +542,13 @@ def enhanced_main():
                     )
                     history.add_message(bot_message)
                     st.session_state.bot_typing = False
+                    st.session_state.processing_response = False
                     st.rerun()
                     
                 except Exception as e:
                     ui.show_notification(f"Error: {str(e)}", "error")
                     st.session_state.bot_typing = False
+                    st.session_state.processing_response = False
     
     # Footer with enhanced info
     st.markdown("---")
